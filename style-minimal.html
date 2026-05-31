@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carlos Lau — Product Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --bg-secondary: #f5f5f7;
+      --text: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --accent: #0066CC;
+      --border: #d2d2d7;
+      --card-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 0 1px rgba(0,0,0,0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Nav */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 14px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    /* Container */
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 120px 0 100px;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .hero-eyebrow-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+    .hero h1 {
+      font-size: clamp(48px, 7vw, 80px);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+      color: var(--text);
+      max-width: 720px;
+      margin-bottom: 24px;
+    }
+    .hero-sub {
+      font-size: 20px;
+      color: var(--text-secondary);
+      max-width: 520px;
+      line-height: 1.5;
+      font-weight: 400;
+      margin-bottom: 40px;
+    }
+    .hero-ctas {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 980px;
+      font-size: 15px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-primary:hover { background: #0056b3; transform: translateY(-1px); }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      color: var(--accent);
+      padding: 12px 24px;
+      border-radius: 980px;
+      font-size: 15px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .btn-secondary:hover { color: #0056b3; }
+    .btn-arrow { transition: transform 0.15s; }
+    .btn-primary:hover .btn-arrow,
+    .btn-secondary:hover .btn-arrow { transform: translateX(3px); }
+
+    /* Section */
+    section { padding: 96px 0; }
+    .section-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: clamp(32px, 4vw, 44px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .section-sub {
+      font-size: 18px;
+      color: var(--text-secondary);
+      max-width: 540px;
+      line-height: 1.55;
+    }
+    .section-header { margin-bottom: 56px; }
+
+    /* About */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .about-text p {
+      font-size: 17px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+    .about-text p:last-child { margin-bottom: 0; }
+    .about-text strong { color: var(--text); font-weight: 600; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .stat-card {
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      padding: 28px 24px;
+    }
+    .stat-number {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    /* Projects */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+    .project-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 32px;
+      text-decoration: none;
+      color: inherit;
+      transition: box-shadow 0.2s, transform 0.2s;
+      display: block;
+    }
+    .project-card:hover {
+      box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+      transform: translateY(-3px);
+    }
+    .project-card.featured {
+      grid-column: span 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+      background: var(--bg-secondary);
+    }
+    .project-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0,102,204,0.08);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 100px;
+      letter-spacing: 0.02em;
+      margin-bottom: 16px;
+    }
+    .project-tag.yc {
+      background: rgba(255,102,0,0.1);
+      color: #E64A00;
+    }
+    .project-name {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    .project-desc {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .project-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .project-pill {
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: rgba(0,0,0,0.05);
+      padding: 3px 10px;
+      border-radius: 100px;
+    }
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--accent);
+      margin-top: 16px;
+    }
+    .project-visual {
+      background: linear-gradient(135deg, #e8f0ff 0%, #dbeafe 100%);
+      border-radius: 12px;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .project-visual svg { opacity: 0.5; }
+
+    /* Experience */
+    .exp-bg { background: var(--bg-secondary); }
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 48px;
+      padding: 36px 0;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .timeline-item:last-child { border-bottom: none; }
+    .timeline-date {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      padding-top: 4px;
+    }
+    .timeline-company {
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .timeline-role {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+      font-weight: 500;
+    }
+    .timeline-desc {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+    .timeline-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255,102,0,0.1);
+      color: #E64A00;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 100px;
+      letter-spacing: 0.04em;
+      margin-left: 8px;
+    }
+
+    /* Kurios Showcase */
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .showcase-card {
+      background: var(--bg-secondary);
+      border-radius: 20px;
+      padding: 32px 28px;
+    }
+    .showcase-icon {
+      width: 48px;
+      height: 48px;
+      background: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      box-shadow: var(--card-shadow);
+    }
+    .showcase-name {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .showcase-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    /* Flow diagram */
+    .flow-diagram {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      overflow-x: auto;
+    }
+
+    /* Recognition */
+    .recognition-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .recognition-pill {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    /* Footer */
+    footer {
+      background: var(--text);
+      color: white;
+      padding: 64px 0;
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .footer-name {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+    .footer-tagline {
+      font-size: 15px;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 24px;
+    }
+    .footer-links {
+      display: flex;
+      gap: 16px;
+    }
+    .footer-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .footer-link:hover { background: rgba(255,255,255,0.18); }
+    .footer-copy {
+      font-size: 13px;
+      color: rgba(255,255,255,0.35);
+      text-align: right;
+    }
+
+    @media (max-width: 768px) {
+      .about-grid { grid-template-columns: 1fr; gap: 48px; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .project-card.featured { grid-column: span 1; grid-template-columns: 1fr; }
+      .project-visual { display: none; }
+      .showcase-grid { grid-template-columns: 1fr; }
+      .timeline-item { grid-template-columns: 1fr; gap: 8px; }
+      .footer-inner { flex-direction: column; gap: 32px; align-items: flex-start; }
+      .footer-copy { text-align: left; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Style label -->
+  <div style="background:#0066CC;color:white;text-align:center;padding:10px;font-size:13px;font-weight:600;letter-spacing:0.05em;">
+    STYLE A — MINIMAL / APPLE
+    <span style="margin:0 16px;opacity:0.5">|</span>
+    <a href="style-dark.html" style="color:rgba(255,255,255,0.7);text-decoration:none;">Style B: Dark</a>
+    <span style="margin:0 8px;opacity:0.3">·</span>
+    <a href="style-editorial.html" style="color:rgba(255,255,255,0.7);text-decoration:none;">Style C: Editorial</a>
+  </div>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">Carlos Lau</a>
+      <ul class="nav-links">
+        <li><a href="#building">Building</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#kurios">Kurios</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-eyebrow">
+          <span class="hero-eyebrow-dot"></span>
+          YC-backed Founder · ex-Uber (pre-IPO) · Product Builder in AI × Enterprise
+        </div>
+        <h1>I build products that think and scale.</h1>
+        <p class="hero-sub">A decade shipping products, scaling teams, and growing companies across the Americas — in two languages.</p>
+        <div class="hero-ctas">
+          <a href="#building" class="btn-primary">See what I'm building <span class="btn-arrow">→</span></a>
+          <a href="#contact" class="btn-secondary">Get in touch <span class="btn-arrow">→</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section>
+      <div class="container">
+        <div class="about-grid">
+          <div class="about-text">
+            <div class="section-label">About</div>
+            <h2 class="section-title">Builder. Strategist. Operator.</h2>
+            <p>I founded <strong>Kurios (YC S21)</strong> — a digital and AI cohort-based training platform for enterprises. Scaled it from zero to ~$1M ARR with 20+ Tier-1 clients across 8 countries, raised $2.7M, and built a 36-person team.</p>
+            <p>Before that, I was the <strong>4th employee at Uber Peru</strong> — part of the founding team that took the market from $2M to $143M GMV in under 18 months.</p>
+            <p>I think in systems. I ship fast. I care about what actually works.</p>
+          </div>
+          <div>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-number">~$1M</div>
+                <div class="stat-label">ARR at Kurios</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">70×</div>
+                <div class="stat-label">GMV growth at Uber Peru</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">20+</div>
+                <div class="stat-label">Enterprise clients</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">$2.7M</div>
+                <div class="stat-label">Raised (YC + VCs)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Building -->
+    <section id="building" style="background:var(--bg-secondary);">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-label">Building</div>
+          <h2 class="section-title">What I'm making</h2>
+          <p class="section-sub">Shipping products across education, AI, and developer tools. Always experimenting.</p>
+        </div>
+
+        <div class="projects-grid">
+
+          <!-- Featured: Kurios -->
+          <div class="project-card featured">
+            <div>
+              <div class="project-tag yc">★ YC S21</div>
+              <div class="project-name">Kurios</div>
+              <p class="project-desc">Enterprise AI & digital cohort-based training platform. Served 20+ Tier-1 clients (Walmart, Scotiabank, BCP) across 8 countries. 35+ courses, 65+ expert instructors, 86% logo retention.</p>
+              <div class="project-meta">
+                <span class="project-pill">$1M ARR</span>
+                <span class="project-pill">20+ clients</span>
+                <span class="project-pill">8 countries</span>
+                <span class="project-pill">$2.7M raised</span>
+              </div>
+              <a href="https://kurios.la" target="_blank" class="project-link">kurios.la ↗</a>
+            </div>
+            <div class="project-visual">
+              <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                <rect x="8" y="16" width="64" height="48" rx="6" stroke="#0066CC" stroke-width="3"/>
+                <path d="M8 28h64" stroke="#0066CC" stroke-width="2"/>
+                <rect x="16" y="36" width="20" height="12" rx="3" fill="#0066CC" opacity="0.3"/>
+                <rect x="44" y="36" width="20" height="6" rx="3" fill="#0066CC" opacity="0.3"/>
+                <rect x="44" y="46" width="14" height="4" rx="2" fill="#0066CC" opacity="0.2"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- SurveyApp -->
+          <a href="https://survey-example-every.vercel.app" target="_blank" class="project-card">
+            <div class="project-tag">Live</div>
+            <div class="project-name">SurveyApp</div>
+            <p class="project-desc">Build beautiful surveys in minutes, share with a link, watch responses roll in. Full-stack Next.js app with auth, database, and analytics.</p>
+            <div class="project-meta">
+              <span class="project-pill">Next.js</span>
+              <span class="project-pill">Neon DB</span>
+              <span class="project-pill">Vercel</span>
+            </div>
+            <span class="project-link">View project ↗</span>
+          </a>
+
+          <!-- learning-ai.dev -->
+          <a href="https://learning-ai.dev" target="_blank" class="project-card">
+            <div class="project-tag">Live</div>
+            <div class="project-name">learning-ai.dev</div>
+            <p class="project-desc">An AI-native learning platform. Exploring how modern AI tools change the way people acquire new skills and knowledge.</p>
+            <div class="project-meta">
+              <span class="project-pill">AI</span>
+              <span class="project-pill">EdTech</span>
+            </div>
+            <span class="project-link">View project ↗</span>
+          </a>
+
+          <!-- Project: Heroic -->
+          <a href="https://heroic-longma-0c14f5.netlify.app" target="_blank" class="project-card">
+            <div class="project-tag">Experiment</div>
+            <div class="project-name">Project: Heroic</div>
+            <p class="project-desc">A product experiment currently in development. More details coming soon.</p>
+            <div class="project-meta">
+              <span class="project-pill">In progress</span>
+            </div>
+            <span class="project-link">View ↗</span>
+          </a>
+
+          <!-- Project: Kitsune -->
+          <a href="https://gleaming-kitsune-77064b.netlify.app" target="_blank" class="project-card">
+            <div class="project-tag">Experiment</div>
+            <div class="project-name">Project: Kitsune</div>
+            <p class="project-desc">Another product in the lab. Building in public — expect rough edges and real experiments.</p>
+            <div class="project-meta">
+              <span class="project-pill">In progress</span>
+            </div>
+            <span class="project-link">View ↗</span>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience -->
+    <section id="experience">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-label">Experience</div>
+          <h2 class="section-title">Where I've been</h2>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-date">2018 – Present</div>
+            <div>
+              <div class="timeline-company">Kurios <span class="timeline-badge">YC S21</span></div>
+              <div class="timeline-role">Founder, CEO & Head of Product · Los Angeles, CA + LATAM</div>
+              <p class="timeline-desc">Built a digital & AI training platform from zero to ~$1M ARR. 20+ enterprise clients across 8 countries, 35+ courses, 65+ instructors. Raised $2.7M from YC, VCs, and angels from Uber, Amazon, and Google. 86% logo retention, 156% NDR, NPS 75+.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2017</div>
+            <div>
+              <div class="timeline-company">UTEC Ventures</div>
+              <div class="timeline-role">Managing Director · Lima, Peru</div>
+              <p class="timeline-desc">Led a top-tier startup accelerator end-to-end. Portfolio grew monthly revenue 139%; 40% of companies closed rounds within 4 months of demo day — 5x faster than prior cohorts.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2015 – 2016</div>
+            <div>
+              <div class="timeline-company">Uber</div>
+              <div class="timeline-role">Operations & Growth (Founding Team, 4th employee) · Lima, Peru</div>
+              <p class="timeline-desc">Part of the Peru founding team. Helped scale from $2M to $143M annualized GMV (70×) in under 18 months. Led Supply Growth: grew weekly active drivers 44× (900 → 40,000). Partnered with HQ Product to launch UberDOST in LATAM.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">Summer 2014</div>
+            <div>
+              <div class="timeline-company">Amazon</div>
+              <div class="timeline-role">Product Marketing Manager (MBA Intern) · Seattle, WA</div>
+              <p class="timeline-desc">Sized market and built business case for launching wireless carrier plans on used phones via Amazon Marketplace. Recommended UX changes projected at 7% incremental revenue.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2011 – 2013</div>
+            <div>
+              <div class="timeline-company">Credicorp Capital</div>
+              <div class="timeline-role">Investment Advisor · Lima, Peru</div>
+              <p class="timeline-desc">Launched new investment products through a 10-banker distribution channel. Hit 140% of first-year fee revenue, onboarded 50 HNW clients and $40M AUM.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:40px;">
+          <div class="section-label" style="margin-bottom:12px;">Education</div>
+          <div style="font-size:16px;font-weight:600;color:var(--text);">UT Austin, McCombs School of Business</div>
+          <div style="font-size:14px;color:var(--text-secondary);margin-top:4px;">Full-Time MBA · Entrepreneurship & Innovation · Good Neighbor Scholarship ($50K) · 2013–2015</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Kurios Showcase -->
+    <section id="kurios" style="background:var(--bg-secondary);">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-label">Product Work</div>
+          <h2 class="section-title">Inside Kurios</h2>
+          <p class="section-sub">A few of the systems and tools I designed and shipped at Kurios — showing the thinking behind the product.</p>
+        </div>
+
+        <div class="showcase-grid">
+          <!-- Warm Intros -->
+          <div class="showcase-card">
+            <div class="showcase-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0066CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <div class="showcase-name">Warm Intros Tool</div>
+            <p class="showcase-desc">A system to facilitate high-quality warm introductions within the Kurios ecosystem — connecting enterprise clients, instructors, and partners based on context and mutual fit.</p>
+            <div class="flow-diagram">
+              <svg width="100%" viewBox="0 0 400 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Boxes -->
+                <rect x="2" y="40" width="72" height="36" rx="6" fill="#e8f0ff" stroke="#0066CC" stroke-width="1.5"/>
+                <text x="38" y="54" text-anchor="middle" font-size="8" font-weight="600" fill="#1d1d1f">Request</text>
+                <text x="38" y="66" text-anchor="middle" font-size="8" fill="#6e6e73">Submitted</text>
+
+                <rect x="90" y="40" width="72" height="36" rx="6" fill="#e8f0ff" stroke="#0066CC" stroke-width="1.5"/>
+                <text x="126" y="54" text-anchor="middle" font-size="8" font-weight="600" fill="#1d1d1f">AI</text>
+                <text x="126" y="66" text-anchor="middle" font-size="8" fill="#6e6e73">Matching</text>
+
+                <rect x="178" y="40" width="72" height="36" rx="6" fill="#e8f0ff" stroke="#0066CC" stroke-width="1.5"/>
+                <text x="214" y="54" text-anchor="middle" font-size="8" font-weight="600" fill="#1d1d1f">Brief</text>
+                <text x="214" y="66" text-anchor="middle" font-size="8" fill="#6e6e73">Drafted</text>
+
+                <rect x="266" y="40" width="72" height="36" rx="6" fill="#e8f0ff" stroke="#0066CC" stroke-width="1.5"/>
+                <text x="302" y="54" text-anchor="middle" font-size="8" font-weight="600" fill="#1d1d1f">Review</text>
+                <text x="302" y="66" text-anchor="middle" font-size="8" fill="#6e6e73">&amp; Approve</text>
+
+                <rect x="354" y="40" width="44" height="36" rx="6" fill="#0066CC"/>
+                <text x="376" y="54" text-anchor="middle" font-size="8" font-weight="600" fill="white">Warm</text>
+                <text x="376" y="66" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.8)">Intro</text>
+
+                <!-- Arrows -->
+                <path d="M74 58 L90 58" stroke="#0066CC" stroke-width="1.5" marker-end="url(#arr)"/>
+                <path d="M162 58 L178 58" stroke="#0066CC" stroke-width="1.5" marker-end="url(#arr)"/>
+                <path d="M250 58 L266 58" stroke="#0066CC" stroke-width="1.5" marker-end="url(#arr)"/>
+                <path d="M338 58 L354 58" stroke="#0066CC" stroke-width="1.5" marker-end="url(#arr)"/>
+
+                <defs>
+                  <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#0066CC"/>
+                  </marker>
+                </defs>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Course Scoping Tool -->
+          <div class="showcase-card">
+            <div class="showcase-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0066CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                <polyline points="2 17 12 22 22 17"/>
+                <polyline points="2 12 12 17 22 12"/>
+              </svg>
+            </div>
+            <div class="showcase-name">Course Scoping Engine</div>
+            <p class="showcase-desc">AI-powered tool to transform ambiguous client briefs into concrete, scoped training programs — handling courses, consulting engagements, and fractional expert projects.</p>
+            <div class="flow-diagram">
+              <svg width="100%" viewBox="0 0 400 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="40" width="68" height="36" rx="6" fill="#e8f0ff" stroke="#0066CC" stroke-width="1.5"/>
+                <text x="36" y="54" text-anchor="middle" font-size="8" font-weight="600" fill="#1d1d1f">Client</text>
+                <text x="36" y="66" text-anchor="middle" font-size="8" fill="#6e6e73">Brief</text>
+
+                <rect x="86" y="40" width="68" height="36" rx="6" fill="#e8f0ff" stroke="#0066CC" stroke-width="1.5"/>
+                <text x="120" y="54" text-anchor="middle" font-size="8" font-weight="600" fill="#1d1d1f">AI</text>
+                <text x="120" y="66" text-anchor="middle" font-size="8" fill="#6e6e73">Analysis</text>
+
+                <rect x="170" y="40" width="68" height="36" rx="6" fill="#e8f0ff" stroke="#0066CC" stroke-width="1.5"/>
+                <text x="204" y="54" text-anchor="middle" font-size="8" font-weight="600" fill="#1d1d1f">Scope</text>
+                <text x="204" y="66" text-anchor="middle" font-size="8" fill="#6e6e73">Draft</text>
+
+                <rect x="254" y="40" width="68" height="36" rx="6" fill="#e8f0ff" stroke="#0066CC" stroke-width="1.5"/>
+                <text x="288" y="54" text-anchor="middle" font-size="8" font-weight="600" fill="#1d1d1f">Feedback</text>
+                <text x="288" y="66" text-anchor="middle" font-size="8" fill="#6e6e73">Loop</text>
+
+                <rect x="338" y="40" width="60" height="36" rx="6" fill="#0066CC"/>
+                <text x="368" y="54" text-anchor="middle" font-size="8" font-weight="600" fill="white">Final</text>
+                <text x="368" y="66" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.8)">Scope</text>
+
+                <path d="M70 58 L86 58" stroke="#0066CC" stroke-width="1.5" marker-end="url(#arr2)"/>
+                <path d="M154 58 L170 58" stroke="#0066CC" stroke-width="1.5" marker-end="url(#arr2)"/>
+                <path d="M238 58 L254 58" stroke="#0066CC" stroke-width="1.5" marker-end="url(#arr2)"/>
+                <path d="M322 58 L338 58" stroke="#0066CC" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+                <defs>
+                  <marker id="arr2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#0066CC"/>
+                  </marker>
+                </defs>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Instructor Marketplace -->
+          <div class="showcase-card">
+            <div class="showcase-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0066CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <path d="M3 9h18M9 21V9"/>
+              </svg>
+            </div>
+            <div class="showcase-name">Instructor Marketplace</div>
+            <p class="showcase-desc">End-to-end system for sourcing, vetting, onboarding, and managing 65+ expert instructors from Uber, Amazon, and top LATAM companies — all running on a custom content creation system.</p>
+            <div class="flow-diagram" style="padding:16px;">
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <div style="background:#f5f5f7;border-radius:8px;padding:8px 12px;font-size:11px;font-weight:600;color:#1d1d1f;">65+ Instructors</div>
+                <div style="background:#f5f5f7;border-radius:8px;padding:8px 12px;font-size:11px;font-weight:600;color:#1d1d1f;">35+ Courses</div>
+                <div style="background:#f5f5f7;border-radius:8px;padding:8px 12px;font-size:11px;font-weight:600;color:#1d1d1f;">85% Completion</div>
+                <div style="background:#f5f5f7;border-radius:8px;padding:8px 12px;font-size:11px;font-weight:600;color:#1d1d1f;">NPS 75+</div>
+                <div style="background:#f5f5f7;border-radius:8px;padding:8px 12px;font-size:11px;font-weight:600;color:#1d1d1f;">Uber · Amazon · BCG</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Recognition -->
+    <section>
+      <div class="container">
+        <div class="section-header">
+          <div class="section-label">Recognition</div>
+          <h2 class="section-title">A few highlights</h2>
+        </div>
+        <div class="recognition-list">
+          <span class="recognition-pill">★ Y Combinator S21</span>
+          <span class="recognition-pill">Forbes Tech Council</span>
+          <span class="recognition-pill">Bloomberg Línea LatAm</span>
+          <span class="recognition-pill">EB1A — Extraordinary Ability</span>
+          <span class="recognition-pill">Advisor: BCP (largest bank, Peru)</span>
+          <span class="recognition-pill">Advisor: Alicorp (largest CPG, Peru)</span>
+          <span class="recognition-pill">UT Austin · Good Neighbor Scholar</span>
+          <span class="recognition-pill">Competitive Squash · 5.5+ Rating</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer / Contact -->
+  <footer id="contact">
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <div class="footer-name">Carlos Lau</div>
+          <div class="footer-tagline">Product builder · Founder · Operator</div>
+          <div class="footer-links">
+            <a href="mailto:carloslauv@gmail.com" class="footer-link">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              carloslauv@gmail.com
+            </a>
+            <a href="https://linkedin.com/in/carloslauv" target="_blank" class="footer-link">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+              LinkedIn
+            </a>
+          </div>
+        </div>
+        <div class="footer-copy">
+          English · Spanish<br>
+          South Pasadena, CA<br>
+          <br>
+          © 2026 Carlos Lau
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
