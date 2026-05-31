@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carlos Lau — Product Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f9f7f4;
+      --bg-dark: #0e0e0e;
+      --text: #0e0e0e;
+      --text-secondary: #5a5a5a;
+      --text-light: #999;
+      --border: #ddd;
+      --border-dark: #c8c8c8;
+      --accent: #0e0e0e;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Nav */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border-dark);
+    }
+    .nav-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 40px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    /* Container */
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+
+    /* Hero — editorial split layout */
+    .hero {
+      padding: 0;
+      border-bottom: 1px solid var(--border-dark);
+    }
+    .hero-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 88vh;
+    }
+    .hero-left {
+      padding: 80px 60px 80px 0;
+      border-right: 1px solid var(--border-dark);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .hero-right {
+      padding: 80px 0 80px 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .hero-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 40px;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(56px, 6.5vw, 88px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 0.95;
+      color: var(--text);
+      margin-bottom: 48px;
+    }
+    .hero-oneliner {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.01em;
+      padding: 12px 0;
+      border-top: 1px solid var(--border-dark);
+      border-bottom: 1px solid var(--border-dark);
+    }
+    .hero-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--text-light);
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .hero-sub {
+      font-size: 17px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      margin-bottom: 40px;
+      max-width: 400px;
+    }
+    .hero-ctas {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--text);
+      color: var(--bg);
+      padding: 13px 28px;
+      border-radius: 2px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: opacity 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.8; }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      color: var(--text);
+      padding: 13px 28px;
+      border-radius: 2px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border: 1px solid var(--border-dark);
+      transition: background 0.15s;
+    }
+    .btn-secondary:hover { background: rgba(0,0,0,0.04); }
+    .hero-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border: 1px solid var(--border-dark);
+    }
+    .hero-stat {
+      padding: 24px 20px;
+      border-right: 1px solid var(--border-dark);
+      border-bottom: 1px solid var(--border-dark);
+    }
+    .hero-stat:nth-child(2n) { border-right: none; }
+    .hero-stat:nth-child(3),
+    .hero-stat:nth-child(4) { border-bottom: none; }
+    .hero-stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .hero-stat-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      letter-spacing: 0.03em;
+    }
+
+    /* Section structure */
+    section { padding: 96px 0; }
+    .section-header-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-dark);
+      padding-bottom: 16px;
+      margin-bottom: 56px;
+    }
+    .section-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 12px;
+      color: var(--text-light);
+      letter-spacing: 0.04em;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 3.5vw, 40px);
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: var(--text);
+    }
+    .section-sub {
+      font-size: 13px;
+      color: var(--text-secondary);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    /* About */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 5fr 4fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .about-text p {
+      font-size: 17px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+    .about-text p strong { color: var(--text); font-weight: 600; }
+    .about-text p:last-child { margin-bottom: 0; }
+    .about-pull {
+      border-left: 3px solid var(--text);
+      padding-left: 24px;
+    }
+    .about-pull-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-style: italic;
+      line-height: 1.45;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .about-pull-attr {
+      font-size: 12px;
+      color: var(--text-light);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* Projects */
+    .projects-list { display: flex; flex-direction: column; }
+    .project-row {
+      display: grid;
+      grid-template-columns: 80px 1fr 1fr auto;
+      gap: 32px;
+      align-items: center;
+      padding: 28px 0;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.15s;
+    }
+    .project-row:first-child { border-top: 1px solid var(--border); }
+    .project-row:hover { background: rgba(0,0,0,0.02); }
+    .project-row-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--border-dark);
+      line-height: 1;
+    }
+    .project-row-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+    .project-row-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+    .project-row-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-dark);
+      padding: 4px 10px;
+      white-space: nowrap;
+    }
+    .project-row-tag.yc {
+      border-color: #c84b00;
+      color: #c84b00;
+    }
+
+    /* Experience */
+    .exp-bg { background: var(--bg-dark); color: #f0f0f0; }
+    .exp-bg .section-title { color: #f0f0f0; }
+    .exp-bg .section-number { color: rgba(240,240,240,0.3); }
+    .exp-bg .section-sub { color: rgba(240,240,240,0.4); }
+    .exp-bg .section-header-row { border-bottom-color: rgba(255,255,255,0.1); }
+
+    .timeline-ed { display: flex; flex-direction: column; }
+    .timeline-item-ed {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 48px;
+      padding: 36px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .timeline-item-ed:last-child { border-bottom: none; }
+    .tl-date {
+      font-size: 12px;
+      color: rgba(240,240,240,0.4);
+      letter-spacing: 0.04em;
+      padding-top: 2px;
+    }
+    .tl-company {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #f0f0f0;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .tl-badge {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: #fb923c;
+      border: 1px solid rgba(251,146,60,0.4);
+      padding: 2px 7px;
+      font-family: 'Inter', sans-serif;
+    }
+    .tl-role {
+      font-size: 13px;
+      color: rgba(240,240,240,0.45);
+      margin-bottom: 12px;
+      letter-spacing: 0.01em;
+    }
+    .tl-desc {
+      font-size: 14px;
+      color: rgba(240,240,240,0.6);
+      line-height: 1.75;
+    }
+
+    /* Kurios showcase */
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border-dark);
+      border: 1px solid var(--border-dark);
+    }
+    .showcase-card {
+      background: var(--bg);
+      padding: 36px 28px;
+    }
+    .showcase-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--border);
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+    .showcase-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    .showcase-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+    .flow-diagram-ed {
+      background: var(--bg-dark);
+      padding: 16px;
+      overflow-x: auto;
+    }
+
+    /* Recognition */
+    .recognition-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      border: 1px solid var(--border-dark);
+    }
+    .recognition-item {
+      padding: 16px 24px;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    /* Footer */
+    footer {
+      background: var(--bg-dark);
+      color: white;
+      padding: 80px 0 60px;
+      border-top: 4px solid var(--bg-dark);
+    }
+    .footer-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 48px;
+      margin-bottom: 32px;
+    }
+    .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 44px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .footer-tagline {
+      font-size: 13px;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.01em;
+      margin-bottom: 32px;
+    }
+    .footer-links { display: flex; gap: 12px; flex-wrap: wrap; }
+    .footer-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: white;
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .footer-link:hover { background: rgba(255,255,255,0.1); }
+    .footer-info {
+      padding-top: 8px;
+    }
+    .footer-info-item {
+      font-size: 14px;
+      color: rgba(255,255,255,0.55);
+      line-height: 2;
+    }
+    .footer-info-item strong { color: white; font-weight: 600; }
+    .footer-copy {
+      font-size: 12px;
+      color: rgba(255,255,255,0.25);
+    }
+
+    @media (max-width: 768px) {
+      .hero-layout { grid-template-columns: 1fr; min-height: auto; }
+      .hero-left { border-right: none; border-bottom: 1px solid var(--border-dark); padding: 60px 0 40px; }
+      .hero-right { padding: 40px 0 60px; }
+      .about-grid { grid-template-columns: 1fr; gap: 40px; }
+      .project-row { grid-template-columns: 1fr; gap: 8px; }
+      .project-row-num { display: none; }
+      .timeline-item-ed { grid-template-columns: 1fr; gap: 8px; }
+      .showcase-grid { grid-template-columns: 1fr; }
+      .footer-layout { grid-template-columns: 1fr; gap: 40px; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Style label -->
+  <div style="background:#0e0e0e;color:rgba(255,255,255,0.5);text-align:center;padding:10px;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;">
+    Style C — Editorial / Elegant
+    <span style="margin:0 16px;opacity:0.3">|</span>
+    <a href="style-minimal.html" style="color:rgba(255,255,255,0.35);text-decoration:none;">Style A: Minimal</a>
+    <span style="margin:0 8px;opacity:0.2">·</span>
+    <a href="style-dark.html" style="color:rgba(255,255,255,0.35);text-decoration:none;">Style B: Dark</a>
+  </div>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">Carlos Lau</a>
+      <ul class="nav-links">
+        <li><a href="#building">Building</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#kurios">Kurios</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-layout">
+          <div class="hero-left">
+            <div>
+              <div class="hero-label">Product Builder · Founder · Operator</div>
+              <h1>I build products that think and scale.</h1>
+            </div>
+            <div class="hero-oneliner">YC-backed Founder · ex-Uber (pre-IPO) · Product Builder in AI × Enterprise</div>
+          </div>
+          <div class="hero-right">
+            <div class="hero-number">00 — Overview</div>
+            <p class="hero-sub">A decade building companies and products across the Americas. From zero to real revenue — in two languages, across 8 countries.</p>
+            <div class="hero-ctas" style="margin-bottom:40px;">
+              <a href="#building" class="btn-primary">See what I'm building →</a>
+              <a href="#contact" class="btn-secondary">Get in touch</a>
+            </div>
+            <div class="hero-stats">
+              <div class="hero-stat">
+                <div class="hero-stat-num">~$1M</div>
+                <div class="hero-stat-label">ARR at Kurios</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-num">70×</div>
+                <div class="hero-stat-label">GMV growth at Uber</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-num">20+</div>
+                <div class="hero-stat-label">Enterprise clients</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-num">$2.7M</div>
+                <div class="hero-stat-label">Raised · YC S21</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section>
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <div class="section-number">01</div>
+            <div class="section-title">About</div>
+          </div>
+          <div class="section-sub">Builder · Strategist · Operator</div>
+        </div>
+        <div class="about-grid">
+          <div class="about-text">
+            <p>I founded <strong>Kurios (YC S21)</strong> — a digital and AI cohort-based training platform for enterprises. Scaled it from zero to ~$1M ARR with 20+ Tier-1 clients across 8 countries, raised $2.7M, and built a 36-person team.</p>
+            <p>Before that, I was the <strong>4th employee at Uber Peru</strong> — part of the founding team that took the market from $2M to $143M GMV in under 18 months. The kind of zero-to-one that reshapes how you think about what's possible.</p>
+            <p>I think in systems. I care deeply about what actually gets adopted. I've run GTM, product discovery, roadmap, design, and hiring — not because I had to, but because I wanted to understand every layer.</p>
+          </div>
+          <div class="about-pull">
+            <p class="about-pull-text">"I've run GTM, product, roadmap, design, and hiring — not because I had to, but because I wanted to understand every layer."</p>
+            <div class="about-pull-attr">Product philosophy</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Building -->
+    <section id="building" style="background:white;border-top:1px solid var(--border-dark);border-bottom:1px solid var(--border-dark);">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <div class="section-number">02</div>
+            <div class="section-title">Building</div>
+          </div>
+          <div class="section-sub">Products · Experiments · Tools</div>
+        </div>
+
+        <div class="projects-list">
+
+          <a href="https://kurios.la" target="_blank" class="project-row">
+            <div class="project-row-num">01</div>
+            <div>
+              <div class="project-row-name">Kurios</div>
+            </div>
+            <div class="project-row-desc">Enterprise AI & digital cohort training. 20+ Tier-1 clients (Walmart, Scotiabank, BCP) across 8 countries. 35+ courses, 86% logo retention, NPS 75+.</div>
+            <div class="project-row-tag yc">★ YC S21</div>
+          </a>
+
+          <a href="https://survey-example-every.vercel.app" target="_blank" class="project-row">
+            <div class="project-row-num">02</div>
+            <div>
+              <div class="project-row-name">SurveyApp</div>
+            </div>
+            <div class="project-row-desc">Build beautiful surveys, share with a link, collect insights. Full-stack Next.js with auth, Neon DB, and analytics. Built in beta.</div>
+            <div class="project-row-tag">Live</div>
+          </a>
+
+          <a href="https://learning-ai.dev" target="_blank" class="project-row">
+            <div class="project-row-num">03</div>
+            <div>
+              <div class="project-row-name">learning-ai.dev</div>
+            </div>
+            <div class="project-row-desc">An AI-native learning platform. Exploring how modern AI tools change the way people acquire new skills and knowledge.</div>
+            <div class="project-row-tag">Live</div>
+          </a>
+
+          <a href="https://heroic-longma-0c14f5.netlify.app" target="_blank" class="project-row">
+            <div class="project-row-num">04</div>
+            <div>
+              <div class="project-row-name">Project: Heroic</div>
+            </div>
+            <div class="project-row-desc">A product experiment currently in development. Details coming soon.</div>
+            <div class="project-row-tag">In Progress</div>
+          </a>
+
+          <a href="https://gleaming-kitsune-77064b.netlify.app" target="_blank" class="project-row">
+            <div class="project-row-num">05</div>
+            <div>
+              <div class="project-row-name">Project: Kitsune</div>
+            </div>
+            <div class="project-row-desc">Another product in the lab. Building in public — expect rough edges and real experiments.</div>
+            <div class="project-row-tag">In Progress</div>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience -->
+    <section id="experience" class="exp-bg">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <div class="section-number" style="color:rgba(240,240,240,0.3);">03</div>
+            <div class="section-title">Experience</div>
+          </div>
+          <div class="section-sub">Where I've been</div>
+        </div>
+
+        <div class="timeline-ed">
+          <div class="timeline-item-ed">
+            <div class="tl-date">2018 – Present</div>
+            <div>
+              <div class="tl-company">Kurios <span class="tl-badge">YC S21</span></div>
+              <div class="tl-role">Founder, CEO & Head of Product · Los Angeles, CA + LATAM</div>
+              <p class="tl-desc">Built a digital & AI training platform from zero to ~$1M ARR. 20+ enterprise clients across 8 countries, 35+ courses, 65+ instructors. Raised $2.7M from YC, VCs, and angels from Uber, Amazon, Google. 86% logo retention, 156% NDR, NPS 75+, ACV $30K→$55K.</p>
+            </div>
+          </div>
+          <div class="timeline-item-ed">
+            <div class="tl-date">2017</div>
+            <div>
+              <div class="tl-company">UTEC Ventures</div>
+              <div class="tl-role">Managing Director · Lima, Peru</div>
+              <p class="tl-desc">Led a top-tier startup accelerator. Portfolio grew monthly revenue 139%; 40% closed rounds within 4 months of demo day — 5× faster than prior cohorts. Grew angel network from handful to dozens.</p>
+            </div>
+          </div>
+          <div class="timeline-item-ed">
+            <div class="tl-date">2015 – 2016</div>
+            <div>
+              <div class="tl-company">Uber</div>
+              <div class="tl-role">Operations & Growth · Founding Team, 4th employee · Lima, Peru</div>
+              <p class="tl-desc">Part of the Peru founding team. Scaled from $2M to $143M GMV (70×) in under 18 months. Led Supply Growth: grew weekly active drivers 44× (900 → 40,000). Launched UberDOST in LATAM.</p>
+            </div>
+          </div>
+          <div class="timeline-item-ed">
+            <div class="tl-date">Summer 2014</div>
+            <div>
+              <div class="tl-company">Amazon</div>
+              <div class="tl-role">Product Marketing Manager (MBA Intern) · Seattle, WA</div>
+              <p class="tl-desc">Built business case for launching wireless carrier plans on used phones via Amazon Marketplace. UX recommendations projected at 7% incremental revenue.</p>
+            </div>
+          </div>
+          <div class="timeline-item-ed">
+            <div class="tl-date">2011 – 2013</div>
+            <div>
+              <div class="tl-company">Credicorp Capital</div>
+              <div class="tl-role">Investment Advisor, Trading Room · Lima, Peru</div>
+              <p class="tl-desc">Launched investment products through a 10-banker channel. 140% of first-year fee revenue, 50 HNW clients, $40M AUM.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:48px;padding-top:36px;border-top:1px solid rgba(255,255,255,0.08);">
+          <div style="font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;">Education</div>
+          <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#f0f0f0;">UT Austin, McCombs School of Business</div>
+          <div style="font-size:13px;color:rgba(240,240,240,0.4);margin-top:6px;">Full-Time MBA · Entrepreneurship & Innovation · Good Neighbor Scholarship ($50K) · 2013–2015</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Kurios Product Showcase -->
+    <section id="kurios">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <div class="section-number">04</div>
+            <div class="section-title">Product Work</div>
+          </div>
+          <div class="section-sub">Inside Kurios</div>
+        </div>
+        <p style="font-size:16px;color:var(--text-secondary);max-width:520px;line-height:1.7;margin-bottom:48px;">A few of the systems and tools I designed at Kurios — showing the thinking behind the product.</p>
+
+        <div class="showcase-grid">
+          <div class="showcase-card">
+            <div class="showcase-num">01</div>
+            <div class="showcase-name">Warm Intros Tool</div>
+            <p class="showcase-desc">A system to facilitate high-quality warm introductions within the Kurios ecosystem — connecting enterprise clients, instructors, and partners based on context and mutual fit.</p>
+            <div class="flow-diagram-ed">
+              <svg width="100%" viewBox="0 0 320 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="26" width="52" height="32" rx="3" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+                <text x="28" y="40" text-anchor="middle" font-size="7" font-weight="600" fill="rgba(255,255,255,0.8)">Request</text>
+                <text x="28" y="50" text-anchor="middle" font-size="6.5" fill="rgba(255,255,255,0.4)">Submitted</text>
+
+                <rect x="68" y="26" width="52" height="32" rx="3" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+                <text x="94" y="40" text-anchor="middle" font-size="7" font-weight="600" fill="rgba(255,255,255,0.8)">AI</text>
+                <text x="94" y="50" text-anchor="middle" font-size="6.5" fill="rgba(255,255,255,0.4)">Matching</text>
+
+                <rect x="134" y="26" width="52" height="32" rx="3" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+                <text x="160" y="40" text-anchor="middle" font-size="7" font-weight="600" fill="rgba(255,255,255,0.8)">Brief</text>
+                <text x="160" y="50" text-anchor="middle" font-size="6.5" fill="rgba(255,255,255,0.4)">Drafted</text>
+
+                <rect x="200" y="26" width="52" height="32" rx="3" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+                <text x="226" y="40" text-anchor="middle" font-size="7" font-weight="600" fill="rgba(255,255,255,0.8)">Review</text>
+                <text x="226" y="50" text-anchor="middle" font-size="6.5" fill="rgba(255,255,255,0.4)">&amp; Approve</text>
+
+                <rect x="266" y="26" width="52" height="32" rx="3" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+                <text x="292" y="40" text-anchor="middle" font-size="7" font-weight="700" fill="white">Warm</text>
+                <text x="292" y="50" text-anchor="middle" font-size="6.5" fill="rgba(255,255,255,0.7)">Intro ↗</text>
+
+                <path d="M54 42 L68 42" stroke="rgba(255,255,255,0.25)" stroke-width="1" marker-end="url(#earr)"/>
+                <path d="M120 42 L134 42" stroke="rgba(255,255,255,0.25)" stroke-width="1" marker-end="url(#earr)"/>
+                <path d="M186 42 L200 42" stroke="rgba(255,255,255,0.25)" stroke-width="1" marker-end="url(#earr)"/>
+                <path d="M252 42 L266 42" stroke="rgba(255,255,255,0.25)" stroke-width="1" marker-end="url(#earr)"/>
+                <defs>
+                  <marker id="earr" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                    <path d="M0,0 L5,2.5 L0,5 Z" fill="rgba(255,255,255,0.3)"/>
+                  </marker>
+                </defs>
+              </svg>
+            </div>
+          </div>
+
+          <div class="showcase-card">
+            <div class="showcase-num">02</div>
+            <div class="showcase-name">Course Scoping Engine</div>
+            <p class="showcase-desc">AI-powered tool to transform ambiguous client briefs into concrete, scoped training programs — handling courses, consulting, and fractional expert projects.</p>
+            <div class="flow-diagram-ed">
+              <svg width="100%" viewBox="0 0 320 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="26" width="52" height="32" rx="3" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+                <text x="28" y="40" text-anchor="middle" font-size="7" font-weight="600" fill="rgba(255,255,255,0.8)">Client</text>
+                <text x="28" y="50" text-anchor="middle" font-size="6.5" fill="rgba(255,255,255,0.4)">Brief</text>
+
+                <rect x="68" y="26" width="52" height="32" rx="3" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+                <text x="94" y="40" text-anchor="middle" font-size="7" font-weight="600" fill="rgba(255,255,255,0.8)">AI</text>
+                <text x="94" y="50" text-anchor="middle" font-size="6.5" fill="rgba(255,255,255,0.4)">Analysis</text>
+
+                <rect x="134" y="26" width="52" height="32" rx="3" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+                <text x="160" y="40" text-anchor="middle" font-size="7" font-weight="600" fill="rgba(255,255,255,0.8)">Scope</text>
+                <text x="160" y="50" text-anchor="middle" font-size="6.5" fill="rgba(255,255,255,0.4)">Draft</text>
+
+                <rect x="200" y="26" width="52" height="32" rx="3" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+                <text x="226" y="40" text-anchor="middle" font-size="7" font-weight="600" fill="rgba(255,255,255,0.8)">Feedback</text>
+                <text x="226" y="50" text-anchor="middle" font-size="6.5" fill="rgba(255,255,255,0.4)">Loop</text>
+
+                <rect x="266" y="26" width="52" height="32" rx="3" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+                <text x="292" y="40" text-anchor="middle" font-size="7" font-weight="700" fill="white">Final</text>
+                <text x="292" y="50" text-anchor="middle" font-size="6.5" fill="rgba(255,255,255,0.7)">Scope</text>
+
+                <path d="M54 42 L68 42" stroke="rgba(255,255,255,0.2)" stroke-width="1" marker-end="url(#earr2)"/>
+                <path d="M120 42 L134 42" stroke="rgba(255,255,255,0.2)" stroke-width="1" marker-end="url(#earr2)"/>
+                <path d="M186 42 L200 42" stroke="rgba(255,255,255,0.2)" stroke-width="1" marker-end="url(#earr2)"/>
+                <path d="M252 42 L266 42" stroke="rgba(255,255,255,0.2)" stroke-width="1" marker-end="url(#earr2)"/>
+                <defs>
+                  <marker id="earr2" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                    <path d="M0,0 L5,2.5 L0,5 Z" fill="rgba(255,255,255,0.25)"/>
+                  </marker>
+                </defs>
+              </svg>
+            </div>
+          </div>
+
+          <div class="showcase-card">
+            <div class="showcase-num">03</div>
+            <div class="showcase-name">Instructor Marketplace</div>
+            <p class="showcase-desc">End-to-end system for sourcing, vetting, and managing 65+ expert instructors from top companies — running on a custom content creation system.</p>
+            <div class="flow-diagram-ed" style="padding:14px;">
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);padding:5px 10px;font-size:10px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.03em;">65+ Instructors</span>
+                <span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);padding:5px 10px;font-size:10px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.03em;">35+ Courses</span>
+                <span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);padding:5px 10px;font-size:10px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.03em;">85% Completion</span>
+                <span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);padding:5px 10px;font-size:10px;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.03em;">NPS 75+</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recognition -->
+    <section style="padding-top:0;">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <div class="section-number">05</div>
+            <div class="section-title">Recognition</div>
+          </div>
+          <div class="section-sub">A few highlights</div>
+        </div>
+        <div class="recognition-row">
+          <div class="recognition-item">★ Y Combinator S21</div>
+          <div class="recognition-item">Forbes Tech Council</div>
+          <div class="recognition-item">Bloomberg Línea LatAm</div>
+          <div class="recognition-item">EB1A — Extraordinary Ability</div>
+          <div class="recognition-item">Advisor · BCP (largest bank, Peru)</div>
+          <div class="recognition-item">Advisor · Alicorp (largest CPG, Peru)</div>
+          <div class="recognition-item">UT Austin · Good Neighbor Scholar</div>
+          <div class="recognition-item">Competitive Squash · 5.5+ US Rating</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer id="contact">
+    <div class="container">
+      <div class="footer-layout">
+        <div>
+          <div class="footer-name">Carlos<br>Lau</div>
+          <div class="footer-tagline">YC-backed Founder · ex-Uber (pre-IPO) · Product Builder in AI × Enterprise</div>
+          <div class="footer-links">
+            <a href="mailto:carloslauv@gmail.com" class="footer-link">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              carloslauv@gmail.com
+            </a>
+            <a href="https://linkedin.com/in/carloslauv" target="_blank" class="footer-link">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+              LinkedIn ↗
+            </a>
+          </div>
+        </div>
+        <div class="footer-info">
+          <div class="footer-info-item"><strong>Location</strong> — South Pasadena, CA</div>
+          <div class="footer-info-item"><strong>Languages</strong> — English (fluent), Spanish (native)</div>
+          <div class="footer-info-item"><strong>Authorization</strong> — US Permanent Resident · No sponsorship required</div>
+          <div class="footer-info-item"><strong>Advisory</strong> — Alicorp, BCP, 50+ founders</div>
+        </div>
+      </div>
+      <div class="footer-copy">© 2026 Carlos Lau · All rights reserved</div>
+    </div>
+  </footer>
+
+</body>
+</html>

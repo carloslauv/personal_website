@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carlos Lau — Product Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #08080c;
+      --bg-card: rgba(255,255,255,0.03);
+      --bg-card-hover: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.08);
+      --border-bright: rgba(255,255,255,0.14);
+      --text: #f0f0f5;
+      --text-muted: rgba(240,240,245,0.45);
+      --text-secondary: rgba(240,240,245,0.65);
+      --accent: #7c5df9;
+      --accent-2: #38bdf8;
+      --glow: rgba(124,93,249,0.2);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      /* dot grid background */
+      background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    /* Radial glow at top */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 600px;
+      background: radial-gradient(ellipse at center, rgba(124,93,249,0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* Nav */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(8,8,12,0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .nav-logo span {
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s;
+      letter-spacing: 0.01em;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    /* Container */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 128px 0 96px;
+      position: relative;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(124,93,249,0.1);
+      border: 1px solid rgba(124,93,249,0.25);
+      color: #a78bfa;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 100px;
+      letter-spacing: 0.04em;
+      margin-bottom: 32px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .hero-badge-dot {
+      width: 6px;
+      height: 6px;
+      background: #a78bfa;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .hero h1 {
+      font-size: clamp(52px, 7.5vw, 88px);
+      font-weight: 800;
+      letter-spacing: -0.045em;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .hero h1 .gradient {
+      background: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.6) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero h1 .gradient-accent {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-oneliner {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      color: var(--accent-2);
+      margin-bottom: 24px;
+      opacity: 0.9;
+    }
+    .hero-sub {
+      font-size: 18px;
+      color: var(--text-secondary);
+      max-width: 500px;
+      line-height: 1.65;
+      margin-bottom: 44px;
+    }
+    .hero-ctas {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--accent), #6340e0);
+      color: white;
+      padding: 13px 28px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
+      box-shadow: 0 0 0 1px rgba(124,93,249,0.4), 0 4px 24px rgba(124,93,249,0.3);
+    }
+    .btn-primary:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 0 0 1px rgba(124,93,249,0.5), 0 8px 32px rgba(124,93,249,0.4);
+    }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      color: var(--text);
+      padding: 13px 28px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid var(--border-bright);
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(255,255,255,0.22);
+    }
+
+    /* Sections */
+    section { padding: 96px 0; position: relative; z-index: 1; }
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: clamp(30px, 4vw, 44px);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.1;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+    .section-sub {
+      font-size: 17px;
+      color: var(--text-secondary);
+      max-width: 480px;
+      line-height: 1.6;
+    }
+    .section-header { margin-bottom: 56px; }
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+
+    /* About */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .about-text p {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      margin-bottom: 16px;
+    }
+    .about-text p strong { color: var(--text); font-weight: 600; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    }
+    .stat-number {
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--text), var(--text-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Projects */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    .project-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 28px;
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      display: block;
+      position: relative;
+      overflow: hidden;
+    }
+    .project-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(124,93,249,0.06) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .project-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-bright);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(124,93,249,0.1);
+    }
+    .project-card:hover::before { opacity: 1; }
+    .project-card.featured {
+      grid-column: span 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+    .project-card.featured::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(124,93,249,0.6), rgba(56,189,248,0.6), transparent);
+    }
+    .project-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(124,93,249,0.12);
+      border: 1px solid rgba(124,93,249,0.2);
+      color: #a78bfa;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      padding: 3px 10px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+      margin-bottom: 14px;
+    }
+    .project-tag.yc {
+      background: rgba(230,74,0,0.1);
+      border-color: rgba(230,74,0,0.2);
+      color: #fb923c;
+    }
+    .project-tag.live {
+      background: rgba(34,197,94,0.08);
+      border-color: rgba(34,197,94,0.2);
+      color: #4ade80;
+    }
+    .project-name {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    .project-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin-bottom: 20px;
+    }
+    .project-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .project-pill {
+      font-size: 11px;
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent);
+      margin-top: 14px;
+      transition: gap 0.15s;
+    }
+    .project-card:hover .project-link { gap: 6px; }
+    .project-visual {
+      background: linear-gradient(135deg, rgba(124,93,249,0.08) 0%, rgba(56,189,248,0.04) 100%);
+      border: 1px solid rgba(124,93,249,0.15);
+      border-radius: 12px;
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Experience */
+    .timeline { display: flex; flex-direction: column; }
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 48px;
+      padding: 32px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .timeline-item:last-child { border-bottom: none; }
+    .timeline-date {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      padding-top: 4px;
+      letter-spacing: 0.04em;
+    }
+    .timeline-company {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .timeline-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 600;
+      background: rgba(230,74,0,0.12);
+      border: 1px solid rgba(230,74,0,0.25);
+      color: #fb923c;
+      padding: 2px 6px;
+      border-radius: 3px;
+      letter-spacing: 0.04em;
+    }
+    .timeline-role {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .timeline-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* Kurios showcase */
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .showcase-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 24px;
+      transition: border-color 0.2s;
+    }
+    .showcase-card:hover { border-color: var(--border-bright); }
+    .showcase-icon {
+      width: 44px;
+      height: 44px;
+      background: rgba(124,93,249,0.1);
+      border: 1px solid rgba(124,93,249,0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .showcase-name {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .showcase-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin-bottom: 20px;
+    }
+    .flow-diagram {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+    }
+
+    /* Recognition */
+    .recognition-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .recognition-pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .recognition-pill:hover {
+      border-color: var(--border-bright);
+      color: var(--text);
+    }
+
+    /* Footer */
+    footer {
+      background: #050508;
+      border-top: 1px solid var(--border);
+      padding: 64px 0;
+      position: relative;
+      z-index: 1;
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .footer-name {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 4px;
+    }
+    .footer-tagline {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      margin-bottom: 20px;
+    }
+    .footer-links { display: flex; gap: 10px; }
+    .footer-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-bright);
+      color: var(--text);
+      padding: 9px 18px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .footer-link:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(255,255,255,0.22);
+    }
+    .footer-copy {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: right;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 768px) {
+      .about-grid { grid-template-columns: 1fr; gap: 48px; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .project-card.featured { grid-column: span 1; grid-template-columns: 1fr; }
+      .project-visual { display: none; }
+      .showcase-grid { grid-template-columns: 1fr; }
+      .timeline-item { grid-template-columns: 1fr; gap: 6px; }
+      .footer-inner { flex-direction: column; gap: 28px; align-items: flex-start; }
+      .footer-copy { text-align: left; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Style label -->
+  <div style="background:rgba(124,93,249,0.15);border-bottom:1px solid rgba(124,93,249,0.3);color:#a78bfa;text-align:center;padding:10px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.08em;z-index:200;position:relative;">
+    STYLE B — DARK / TECHY
+    <span style="margin:0 16px;opacity:0.4">|</span>
+    <a href="style-minimal.html" style="color:rgba(167,139,250,0.6);text-decoration:none;">Style A: Minimal</a>
+    <span style="margin:0 8px;opacity:0.3">·</span>
+    <a href="style-editorial.html" style="color:rgba(167,139,250,0.6);text-decoration:none;">Style C: Editorial</a>
+  </div>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">Carlos <span>Lau</span></a>
+      <ul class="nav-links">
+        <li><a href="#building">Building</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#kurios">Kurios</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          Open to new opportunities
+        </div>
+        <div class="hero-oneliner">YC-backed Founder · ex-Uber (pre-IPO) · Product Builder in AI × Enterprise</div>
+        <h1>
+          <span class="gradient">I ship products</span><br>
+          <span class="gradient-accent">that scale.</span>
+        </h1>
+        <p class="hero-sub">A decade building companies, teams, and products across the Americas. From zero to real revenue — in two languages.</p>
+        <div class="hero-ctas">
+          <a href="#building" class="btn-primary">See what I'm building →</a>
+          <a href="#contact" class="btn-secondary">Get in touch</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section style="padding-top:0;">
+      <div class="container">
+        <div class="about-grid">
+          <div class="about-text">
+            <div class="section-label">// about</div>
+            <h2 class="section-title">Builder. Strategist. Operator.</h2>
+            <p>I founded <strong>Kurios (YC S21)</strong> — an AI and digital cohort training platform for enterprises. Scaled $0→~$1M ARR with 20+ Tier-1 clients (Walmart, Scotiabank, BCP), raised $2.7M, and built a 36-person team.</p>
+            <p>Before that, I was the <strong>4th employee at Uber Peru</strong> — part of the founding team that took the market from $2M to $143M GMV (70×) in under 18 months.</p>
+            <p>I think in systems, move fast, and care about what actually gets adopted.</p>
+          </div>
+          <div>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-number">~$1M</div>
+                <div class="stat-label">ARR at Kurios</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">70×</div>
+                <div class="stat-label">Uber Peru GMV</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">20+</div>
+                <div class="stat-label">Enterprise clients</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">$2.7M</div>
+                <div class="stat-label">Raised · YC S21</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Building -->
+    <section id="building">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-label">// building</div>
+          <h2 class="section-title">What I'm shipping</h2>
+          <p class="section-sub">Products across education, AI, and developer tools. Always experimenting, always shipping.</p>
+        </div>
+
+        <div class="projects-grid">
+
+          <!-- Kurios featured -->
+          <div class="project-card featured">
+            <div>
+              <div class="project-tag yc">★ YC S21</div>
+              <div class="project-name">Kurios</div>
+              <p class="project-desc">Enterprise AI & digital cohort-based training platform. Served 20+ Tier-1 clients (Walmart, Scotiabank, BCP) across 8 countries. 35+ courses, 65+ expert instructors, 86% logo retention, NPS 75+.</p>
+              <div class="project-pills">
+                <span class="project-pill">$1M ARR</span>
+                <span class="project-pill">20+ clients</span>
+                <span class="project-pill">8 countries</span>
+                <span class="project-pill">$2.7M raised</span>
+              </div>
+              <a href="https://kurios.la" target="_blank" class="project-link">kurios.la ↗</a>
+            </div>
+            <div class="project-visual">
+              <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+                <rect x="6" y="14" width="60" height="44" rx="5" stroke="rgba(124,93,249,0.6)" stroke-width="2"/>
+                <path d="M6 26h60" stroke="rgba(124,93,249,0.4)" stroke-width="1.5"/>
+                <rect x="14" y="34" width="18" height="10" rx="2" fill="rgba(124,93,249,0.2)"/>
+                <rect x="40" y="34" width="18" height="5" rx="2" fill="rgba(56,189,248,0.2)"/>
+                <rect x="40" y="42" width="12" height="4" rx="2" fill="rgba(56,189,248,0.1)"/>
+                <circle cx="36" cy="14" r="4" fill="rgba(124,93,249,0.4)"/>
+                <path d="M36 10v8M32 14h8" stroke="rgba(124,93,249,0.6)" stroke-width="1.5"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- SurveyApp -->
+          <a href="https://survey-example-every.vercel.app" target="_blank" class="project-card">
+            <div class="project-tag live">● Live</div>
+            <div class="project-name">SurveyApp</div>
+            <p class="project-desc">Build beautiful surveys, share with a link, collect insights. Full-stack Next.js app with auth, Neon DB, and analytics.</p>
+            <div class="project-pills">
+              <span class="project-pill">Next.js</span>
+              <span class="project-pill">Neon DB</span>
+              <span class="project-pill">Vercel</span>
+            </div>
+            <span class="project-link">View project ↗</span>
+          </a>
+
+          <a href="https://learning-ai.dev" target="_blank" class="project-card">
+            <div class="project-tag live">● Live</div>
+            <div class="project-name">learning-ai.dev</div>
+            <p class="project-desc">AI-native learning platform. Exploring how modern AI tools change the way people acquire skills and knowledge.</p>
+            <div class="project-pills">
+              <span class="project-pill">AI</span>
+              <span class="project-pill">EdTech</span>
+            </div>
+            <span class="project-link">View project ↗</span>
+          </a>
+
+          <a href="https://heroic-longma-0c14f5.netlify.app" target="_blank" class="project-card">
+            <div class="project-tag">Experiment</div>
+            <div class="project-name">Project: Heroic</div>
+            <p class="project-desc">A product experiment currently in development. More details coming soon.</p>
+            <div class="project-pills">
+              <span class="project-pill">In progress</span>
+            </div>
+            <span class="project-link">View ↗</span>
+          </a>
+
+          <a href="https://gleaming-kitsune-77064b.netlify.app" target="_blank" class="project-card">
+            <div class="project-tag">Experiment</div>
+            <div class="project-name">Project: Kitsune</div>
+            <p class="project-desc">Another product in the lab. Building in public — expect rough edges and real experiments.</p>
+            <div class="project-pills">
+              <span class="project-pill">In progress</span>
+            </div>
+            <span class="project-link">View ↗</span>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience -->
+    <section id="experience">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-label">// experience</div>
+          <h2 class="section-title">Where I've been</h2>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-date">2018 → present</div>
+            <div>
+              <div class="timeline-company">Kurios <span class="timeline-badge">YC S21</span></div>
+              <div class="timeline-role">Founder, CEO & Head of Product · LA + LATAM</div>
+              <p class="timeline-desc">Built a digital & AI training platform from zero to ~$1M ARR. 20+ enterprise clients across 8 countries, 35+ courses, 65+ instructors. Raised $2.7M from YC, VCs, and angels from Uber, Amazon, Google. 86% logo retention, 156% NDR, NPS 75+.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2017</div>
+            <div>
+              <div class="timeline-company">UTEC Ventures</div>
+              <div class="timeline-role">Managing Director · Lima, Peru</div>
+              <p class="timeline-desc">Led a top-tier startup accelerator. Portfolio grew monthly revenue 139%; 40% closed rounds within 4 months of demo day — 5× faster than prior cohorts.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2015 → 2016</div>
+            <div>
+              <div class="timeline-company">Uber</div>
+              <div class="timeline-role">Operations & Growth · Founding Team (4th employee) · Lima, Peru</div>
+              <p class="timeline-desc">Founding team. Helped scale from $2M to $143M GMV (70×) in under 18 months. Led Supply Growth: grew weekly active drivers 44× (900 → 40,000). Launched UberDOST across LATAM with HQ Product.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">Summer 2014</div>
+            <div>
+              <div class="timeline-company">Amazon</div>
+              <div class="timeline-role">Product Marketing Manager (MBA Intern) · Seattle, WA</div>
+              <p class="timeline-desc">Built business case for launching wireless carrier plans on used phones via Marketplace. UX recommendations projected at 7% incremental revenue.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:40px;padding-top:40px;border-top:1px solid var(--border);">
+          <div class="section-label" style="margin-bottom:10px;">// education</div>
+          <div style="font-size:16px;font-weight:700;color:var(--text);">UT Austin, McCombs School of Business</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted);margin-top:6px;">Full-Time MBA · Entrepreneurship & Innovation · Good Neighbor Scholar ($50K) · 2013–2015</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Kurios Showcase -->
+    <section id="kurios">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-label">// product work</div>
+          <h2 class="section-title">Inside Kurios</h2>
+          <p class="section-sub">A few of the systems I designed and shipped — showing the thinking behind the product.</p>
+        </div>
+
+        <div class="showcase-grid">
+          <div class="showcase-card">
+            <div class="showcase-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <div class="showcase-name">Warm Intros Tool</div>
+            <p class="showcase-desc">Facilitate high-quality warm introductions within the Kurios ecosystem — connecting clients, instructors, and partners based on context and fit.</p>
+            <div class="flow-diagram">
+              <svg width="100%" viewBox="0 0 360 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="30" width="60" height="36" rx="5" fill="rgba(124,93,249,0.08)" stroke="rgba(124,93,249,0.35)" stroke-width="1"/>
+                <text x="32" y="46" text-anchor="middle" font-size="7.5" font-weight="600" fill="#f0f0f5">Request</text>
+                <text x="32" y="57" text-anchor="middle" font-size="7" fill="rgba(240,240,245,0.5)">Submitted</text>
+
+                <rect x="76" y="30" width="60" height="36" rx="5" fill="rgba(124,93,249,0.08)" stroke="rgba(124,93,249,0.35)" stroke-width="1"/>
+                <text x="106" y="46" text-anchor="middle" font-size="7.5" font-weight="600" fill="#f0f0f5">AI</text>
+                <text x="106" y="57" text-anchor="middle" font-size="7" fill="rgba(240,240,245,0.5)">Matching</text>
+
+                <rect x="150" y="30" width="60" height="36" rx="5" fill="rgba(124,93,249,0.08)" stroke="rgba(124,93,249,0.35)" stroke-width="1"/>
+                <text x="180" y="46" text-anchor="middle" font-size="7.5" font-weight="600" fill="#f0f0f5">Brief</text>
+                <text x="180" y="57" text-anchor="middle" font-size="7" fill="rgba(240,240,245,0.5)">Drafted</text>
+
+                <rect x="224" y="30" width="60" height="36" rx="5" fill="rgba(124,93,249,0.08)" stroke="rgba(124,93,249,0.35)" stroke-width="1"/>
+                <text x="254" y="46" text-anchor="middle" font-size="7.5" font-weight="600" fill="#f0f0f5">Review</text>
+                <text x="254" y="57" text-anchor="middle" font-size="7" fill="rgba(240,240,245,0.5)">&amp; Approve</text>
+
+                <rect x="298" y="30" width="60" height="36" rx="5" fill="rgba(124,93,249,0.25)" stroke="rgba(124,93,249,0.6)" stroke-width="1"/>
+                <text x="328" y="46" text-anchor="middle" font-size="7.5" font-weight="700" fill="white">Warm</text>
+                <text x="328" y="57" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.7)">Intro ↗</text>
+
+                <path d="M62 48 L76 48" stroke="rgba(124,93,249,0.5)" stroke-width="1.5" marker-end="url(#darr)"/>
+                <path d="M136 48 L150 48" stroke="rgba(124,93,249,0.5)" stroke-width="1.5" marker-end="url(#darr)"/>
+                <path d="M210 48 L224 48" stroke="rgba(124,93,249,0.5)" stroke-width="1.5" marker-end="url(#darr)"/>
+                <path d="M284 48 L298 48" stroke="rgba(124,93,249,0.5)" stroke-width="1.5" marker-end="url(#darr)"/>
+                <defs>
+                  <marker id="darr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="rgba(124,93,249,0.7)"/>
+                  </marker>
+                </defs>
+              </svg>
+            </div>
+          </div>
+
+          <div class="showcase-card">
+            <div class="showcase-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                <polyline points="2 17 12 22 22 17"/>
+                <polyline points="2 12 12 17 22 12"/>
+              </svg>
+            </div>
+            <div class="showcase-name">Course Scoping Engine</div>
+            <p class="showcase-desc">AI-powered tool to turn ambiguous client briefs into concrete, scoped training programs — covering courses, consulting, and fractional expert projects.</p>
+            <div class="flow-diagram">
+              <svg width="100%" viewBox="0 0 360 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="30" width="56" height="36" rx="5" fill="rgba(56,189,248,0.06)" stroke="rgba(56,189,248,0.3)" stroke-width="1"/>
+                <text x="30" y="46" text-anchor="middle" font-size="7.5" font-weight="600" fill="#f0f0f5">Client</text>
+                <text x="30" y="57" text-anchor="middle" font-size="7" fill="rgba(240,240,245,0.5)">Brief</text>
+
+                <rect x="72" y="30" width="56" height="36" rx="5" fill="rgba(56,189,248,0.06)" stroke="rgba(56,189,248,0.3)" stroke-width="1"/>
+                <text x="100" y="46" text-anchor="middle" font-size="7.5" font-weight="600" fill="#f0f0f5">AI</text>
+                <text x="100" y="57" text-anchor="middle" font-size="7" fill="rgba(240,240,245,0.5)">Analysis</text>
+
+                <rect x="142" y="30" width="56" height="36" rx="5" fill="rgba(56,189,248,0.06)" stroke="rgba(56,189,248,0.3)" stroke-width="1"/>
+                <text x="170" y="46" text-anchor="middle" font-size="7.5" font-weight="600" fill="#f0f0f5">Scope</text>
+                <text x="170" y="57" text-anchor="middle" font-size="7" fill="rgba(240,240,245,0.5)">Draft</text>
+
+                <rect x="212" y="30" width="56" height="36" rx="5" fill="rgba(56,189,248,0.06)" stroke="rgba(56,189,248,0.3)" stroke-width="1"/>
+                <text x="240" y="46" text-anchor="middle" font-size="7.5" font-weight="600" fill="#f0f0f5">Feedback</text>
+                <text x="240" y="57" text-anchor="middle" font-size="7" fill="rgba(240,240,245,0.5)">Loop</text>
+
+                <rect x="282" y="30" width="56" height="36" rx="5" fill="rgba(56,189,248,0.2)" stroke="rgba(56,189,248,0.5)" stroke-width="1"/>
+                <text x="310" y="46" text-anchor="middle" font-size="7.5" font-weight="700" fill="white">Final</text>
+                <text x="310" y="57" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.7)">Scope</text>
+
+                <path d="M58 48 L72 48" stroke="rgba(56,189,248,0.4)" stroke-width="1.5" marker-end="url(#darr2)"/>
+                <path d="M128 48 L142 48" stroke="rgba(56,189,248,0.4)" stroke-width="1.5" marker-end="url(#darr2)"/>
+                <path d="M198 48 L212 48" stroke="rgba(56,189,248,0.4)" stroke-width="1.5" marker-end="url(#darr2)"/>
+                <path d="M268 48 L282 48" stroke="rgba(56,189,248,0.4)" stroke-width="1.5" marker-end="url(#darr2)"/>
+                <defs>
+                  <marker id="darr2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="rgba(56,189,248,0.5)"/>
+                  </marker>
+                </defs>
+              </svg>
+            </div>
+          </div>
+
+          <div class="showcase-card">
+            <div class="showcase-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <path d="M3 9h18M9 21V9"/>
+              </svg>
+            </div>
+            <div class="showcase-name">Instructor Marketplace</div>
+            <p class="showcase-desc">End-to-end system for sourcing, vetting, and managing 65+ expert instructors from Uber, Amazon, and top LATAM companies — running on a custom content creation system.</p>
+            <div class="flow-diagram" style="padding:14px;">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <span style="background:rgba(124,93,249,0.1);border:1px solid rgba(124,93,249,0.2);border-radius:4px;padding:5px 10px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#a78bfa;">65+ Instructors</span>
+                <span style="background:rgba(124,93,249,0.1);border:1px solid rgba(124,93,249,0.2);border-radius:4px;padding:5px 10px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#a78bfa;">35+ Courses</span>
+                <span style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);border-radius:4px;padding:5px 10px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#7dd3fc;">85% Completion</span>
+                <span style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);border-radius:4px;padding:5px 10px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#7dd3fc;">NPS 75+</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recognition -->
+    <section style="padding-top:0;">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-label">// recognition</div>
+          <h2 class="section-title">A few highlights</h2>
+        </div>
+        <div class="recognition-list">
+          <span class="recognition-pill">★ Y Combinator S21</span>
+          <span class="recognition-pill">Forbes Tech Council</span>
+          <span class="recognition-pill">Bloomberg Línea LatAm</span>
+          <span class="recognition-pill">EB1A — Extraordinary Ability</span>
+          <span class="recognition-pill">Advisor · BCP (largest bank, Peru)</span>
+          <span class="recognition-pill">Advisor · Alicorp (largest CPG, Peru)</span>
+          <span class="recognition-pill">UT Austin · Good Neighbor Scholar</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer id="contact">
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <div class="footer-name">Carlos Lau</div>
+          <div class="footer-tagline">YC-backed Founder · ex-Uber (pre-IPO) · Product Builder in AI × Enterprise</div>
+          <div class="footer-links">
+            <a href="mailto:carloslauv@gmail.com" class="footer-link">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              Email
+            </a>
+            <a href="https://linkedin.com/in/carloslauv" target="_blank" class="footer-link">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+              LinkedIn
+            </a>
+          </div>
+        </div>
+        <div class="footer-copy">
+          English · Spanish<br>
+          South Pasadena, CA<br>
+          <br>
+          © 2026 Carlos Lau
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
